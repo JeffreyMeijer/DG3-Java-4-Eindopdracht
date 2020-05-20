@@ -4,12 +4,16 @@ import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
-import javax.swing.JList;
+import java.util.Properties;
+
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.mail.*;  
+import javax.mail.internet.*;
+import javax.activation.*;
 
 import com.dg3.main.models.Model;
 import com.dg3.main.views.OverzichtView;
@@ -43,9 +47,39 @@ public class OverzichtController extends JPanel {
 			table.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent me) {
 					if(me.getClickCount() == 2) {
+						Object[] options = {"Versturen", "Annuleren"};
 						JTable target = (JTable)me.getSource();
 						int row = target.getSelectedRow();
-						JOptionPane.showMessageDialog(null, table.getValueAt(row, 0)); // Get factuurID
+						String s = (String)JOptionPane.showInputDialog(null,null);
+						if ((s != null) && (s.length() > 0)) {
+							String to = s;
+							String host = "smtp.gmail.com";
+							final String user = "jeffreykiller6723@gmail.com";
+							final String password = "anglito564";
+							
+						    Properties properties = System.getProperties();
+						    properties.put("mail.smtp.host", host); 
+						    properties.put("mail.smtp.auth", true);
+						    properties.put("mail.smtp.starttls.enable", true);
+						    properties.put("mail.smtp.port", 587);
+						    
+						    Session session = Session.getDefaultInstance(properties);  
+						    try {
+						         MimeMessage message = new MimeMessage(session);  
+						         message.setFrom(new InternetAddress(user));  
+						         message.addRecipient(Message.RecipientType.TO,new InternetAddress(to));  
+						         message.setSubject("Ping");  
+						         message.setText("Hello, this is example of sending email  ");  
+						         
+						         Transport.send(message, user, password);
+						         System.out.println("Message sent!");
+						         JOptionPane.showOptionDialog(null, table.getValueAt(row, 0), "Email verstuurd", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,null,options,options[0]); // Get factuurID
+								  return;
+						    } catch (Exception e) {
+						    	e.printStackTrace();
+						    }
+						}
+//						JOptionPane.showOptionDialog(null, table.getValueAt(row, 0), "Email", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,null,options,options[0]); // Get factuurID
 					}
 				}
 			});
