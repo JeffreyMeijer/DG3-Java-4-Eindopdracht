@@ -30,9 +30,9 @@ public class OverzichtController extends JPanel {
 		try {
 			Object[][] data = new Object[model.getFacturenCount()][0];
 			for(int i = 0; i < model.getFacturenCount(); i++) {
-				ResultSet results = model.getBuyer(model.getAccountID(i+1));
-				String firstname = results.getString(2);
-				String lastname = results.getString(3);
+				ResultSet results = model.getBuyer(i+1);
+				String firstname = results.getString(1);
+				String lastname = results.getString(2);
 				String name = firstname + " " + lastname;
 				data[i] = new Object[]{i+1, name, model.getFactuurDatum(i+1),model.getTotaalPrijs(i+1), model.getFactuurStatus(i+1)};
 			}
@@ -47,33 +47,29 @@ public class OverzichtController extends JPanel {
 			table.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent me) {
 					if(me.getClickCount() == 2) {
-						Object[] options = {"Versturen", "Annuleren"};
+						Object[] options = {"Ok"};
 						JTable target = (JTable)me.getSource();
 						int row = target.getSelectedRow();
-						String s = (String)JOptionPane.showInputDialog(null,null);
+						String s = (String)JOptionPane.showInputDialog(null,"Naar welke email wilt u dit factuur sturen?");
 						if ((s != null) && (s.length() > 0)) {
 							String to = s;
-							String host = "smtp.gmail.com";
-							final String user = "jeffreykiller6723@gmail.com";
-							final String password = "anglito564";
+							String host = "localhost";
+							final String from = "123974@student.drenthecollege.nl";
 							
 						    Properties properties = System.getProperties();
 						    properties.put("mail.smtp.host", host); 
-						    properties.put("mail.smtp.auth", true);
-						    properties.put("mail.smtp.starttls.enable", true);
-						    properties.put("mail.smtp.port", 587);
 						    
 						    Session session = Session.getDefaultInstance(properties);  
 						    try {
 						         MimeMessage message = new MimeMessage(session);  
-						         message.setFrom(new InternetAddress(user));  
+						         message.setFrom(new InternetAddress(from));  
 						         message.addRecipient(Message.RecipientType.TO,new InternetAddress(to));  
-						         message.setSubject("Ping");  
-						         message.setText("Hello, this is example of sending email  ");  
+						         message.setSubject("Factuur");  
+						         message.setText("Hallo, hierbij uw factuur van u recente aankoop");  
 						         
-						         Transport.send(message, user, password);
+						         Transport.send(message);
 						         System.out.println("Message sent!");
-						         JOptionPane.showOptionDialog(null, table.getValueAt(row, 0), "Email verstuurd", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,null,options,options[0]); // Get factuurID
+						         JOptionPane.showOptionDialog(null, "Factuur verstuurd naar " + to, "Email verstuurd", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,null,options,options[0]); // Get factuurID
 								  return;
 						    } catch (Exception e) {
 						    	e.printStackTrace();
