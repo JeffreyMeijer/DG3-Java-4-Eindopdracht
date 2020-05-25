@@ -26,9 +26,9 @@ public class OverzichtController extends JPanel {
 		try {
 			Object[][] data = new Object[model.getFacturenCount()][0];
 			for(int i = 0; i < model.getFacturenCount(); i++) {
-				ResultSet results = model.getBuyer(model.getAccountID(i+1));
-				String firstname = results.getString(2);
-				String lastname = results.getString(3);
+				ResultSet results = model.getBuyer(i+1);
+				String firstname = results.getString(1);
+				String lastname = results.getString(2);
 				String name = firstname + " " + lastname;
 				data[i] = new Object[]{i+1, name, model.getFactuurDatum(i+1),model.getTotaalPrijs(i+1), model.getFactuurStatus(i+1)};
 			}
