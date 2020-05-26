@@ -68,14 +68,12 @@ public class OverzichtController extends JPanel {
 						         message.setText("Hallo, hierbij uw factuur van u recente aankoop");  
 						         
 						         Transport.send(message);
-						         System.out.println("Message sent!");
 						         JOptionPane.showOptionDialog(null, "Factuur verstuurd naar " + to, "Email verstuurd", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,null,options,options[0]); // Get factuurID
 								  return;
 						    } catch (Exception e) {
 						    	e.printStackTrace();
 						    }
 						}
-//						JOptionPane.showOptionDialog(null, table.getValueAt(row, 0), "Email", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,null,options,options[0]); // Get factuurID
 					}
 				}
 			});
