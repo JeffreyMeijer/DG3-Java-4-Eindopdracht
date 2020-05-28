@@ -9,4 +9,5 @@
 - Clone deze repository and pak hem uit.
 - Download en installeer <a href="https://www.apachefriends.org/index.html">**Xampp**</a> of een soortgelijke software.
 - Open Xampp en start de MYSQL server.
-- Start de software.
+- Open het project in Eclipse
+- Start de software door op de "Run Application" knop te drukken.
