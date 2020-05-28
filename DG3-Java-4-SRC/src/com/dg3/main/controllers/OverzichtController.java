@@ -25,7 +25,7 @@ import com.dg3.main.views.OverzichtView;
 public class OverzichtController extends JPanel {
 	private OverzichtView view;
 	private Model model;
-	BigDecimal totaalPrijs = new BigDecimal(0);
+	double totaalPrijs;
 	public OverzichtController() {
 		model = new Model();
 		view = new OverzichtView();
@@ -75,10 +75,10 @@ public class OverzichtController extends JPanel {
 						         message.setSubject("Factuur"); 
 						         StringBuilder producten = new StringBuilder();
 						         producten.append("U heeft het volgende gekocht:\n");
+						         totaalPrijs = model.getTotaalPrijs(factuurID);
 						         factuurProducten.keySet().forEach(key -> {
 						        	 Object value = factuurProducten.get(key);
 						        	 BigDecimal productPrijs = new BigDecimal(model.getProductPrijsByName(key));
-						        	 totaalPrijs = totaalPrijs.add(productPrijs);
 						        	 producten.append(String.format("<tr><td>%s</td><td>%s</td><td>%.2f</td></tr>", key,value,productPrijs));
 						         });
 						         message.setContent(String.format
