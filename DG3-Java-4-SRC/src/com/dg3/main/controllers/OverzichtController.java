@@ -69,6 +69,9 @@ public class OverzichtController extends JPanel {
 						    try {
 								 String voornaam = Koper.getString(1);
 								 String achternaam = Koper.getString(2);
+								 String adres = Koper.getString(3);
+								 String postcode = Koper.getString(4);
+								 String plaats = Koper.getString(5);
 						         MimeMessage message = new MimeMessage(session);  
 						         message.setFrom(new InternetAddress(from));  
 						         message.addRecipient(Message.RecipientType.TO,new InternetAddress(to));  
@@ -83,12 +86,14 @@ public class OverzichtController extends JPanel {
 						         });
 						         message.setContent(String.format
 						        		 ("<h1>Hallo %s %s, hierbij uw factuur van u recente aankoop</h1>"
+						        				+ "<p>Adres: %s</p>"
+						        				+ "<p>%s %s</p>"
 						        		 		+ "<table>"
 						        		 		+ "<tr>"
 						        		 		+ "<th>Product</th><th>Aantal</th><th>Prijs</th>"
 						        		 		+ "</tr>%s"
 						        		 		+ "</table>"
-						        		 		+ "Totaal Prijs: %.2f", voornaam,achternaam,producten,totaalPrijs
+						        		 		+ "Totaal Prijs: %.2f", voornaam,achternaam,adres,postcode,plaats,producten,totaalPrijs
 						        		 ), "text/html");
 						         Transport.send(message);
 						         JOptionPane.showOptionDialog(null, "Factuur verstuurd naar " + to, "Email verstuurd", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,null,options,options[0]); // Get factuurID
