@@ -6,6 +6,8 @@ import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -57,50 +59,56 @@ public class OverzichtController extends JPanel {
 						int row = target.getSelectedRow();
 						String s = (String)JOptionPane.showInputDialog(null,"Naar welke email wilt u dit factuur sturen?");
 						if ((s != null) && (s.length() > 0)) {
-							String to = s;
-							String host = "localhost";
-							final String from = "123974@student.drenthecollege.nl";
-							int factuurID = Integer.parseInt(table.getModel().getValueAt(row, 0).toString());
-							JSONObject factuurProducten = model.getFactuurProducts(factuurID);
-							ResultSet Koper = model.getBuyer(factuurID);
-						    Properties properties = System.getProperties();
-						    properties.put("mail.smtp.host", host); 
-						    Session session = Session.getDefaultInstance(properties);  
-						    try {
-								 String voornaam = Koper.getString(1);
-								 String achternaam = Koper.getString(2);
-								 String adres = Koper.getString(3);
-								 String postcode = Koper.getString(4);
-								 String plaats = Koper.getString(5);
-						         MimeMessage message = new MimeMessage(session);  
-						         message.setFrom(new InternetAddress(from));  
-						         message.addRecipient(Message.RecipientType.TO,new InternetAddress(to));  
-						         message.setSubject("Factuur"); 
-						         StringBuilder producten = new StringBuilder();
-						         producten.append("U heeft het volgende gekocht:\n");
-						         totaalPrijs = model.getTotaalPrijs(factuurID);
-						         factuurProducten.keySet().forEach(key -> {
-						        	 Object value = factuurProducten.get(key);
-						        	 BigDecimal productPrijs = new BigDecimal(model.getProductPrijsByName(key));
-						        	 producten.append(String.format("<tr><td>%s</td><td>%s</td><td>%.2f</td></tr>", key,value,productPrijs));
-						         });
-						         message.setContent(String.format
-						        		 ("<h1>Hallo %s %s, hierbij uw factuur van u recente aankoop</h1>"
-						        				+ "<p>Adres: %s</p>"
-						        				+ "<p>%s %s</p>"
-						        		 		+ "<table>"
-						        		 		+ "<tr>"
-						        		 		+ "<th>Product</th><th>Aantal</th><th>Prijs</th>"
-						        		 		+ "</tr>%s"
-						        		 		+ "</table>"
-						        		 		+ "Totaal Prijs: %.2f", voornaam,achternaam,adres,postcode,plaats,producten,totaalPrijs
-						        		 ), "text/html");
-						         Transport.send(message);
-						         JOptionPane.showOptionDialog(null, "Factuur verstuurd naar " + to, "Email verstuurd", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,null,options,options[0]); // Get factuurID
-								 return;
-						    } catch (Exception e) {
-						    	e.printStackTrace();
-						    }
+							final Pattern EMAIL_VERIFICATION = Pattern.compile("^(.+)@(.+)$");
+							Matcher matcher = EMAIL_VERIFICATION.matcher(s);
+							if(!matcher.matches()) {
+								JOptionPane.showOptionDialog(null, "Email is incorrect!", "Incorrect", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, null, null);
+							} else {
+								String to = s;
+								String host = "localhost";
+								final String from = "123974@student.drenthecollege.nl";
+								int factuurID = Integer.parseInt(table.getModel().getValueAt(row, 0).toString());
+								JSONObject factuurProducten = model.getFactuurProducts(factuurID);
+								ResultSet Koper = model.getBuyer(factuurID);
+						    	Properties properties = System.getProperties();
+						    	properties.put("mail.smtp.host", host); 
+						    	Session session = Session.getDefaultInstance(properties);  
+						    	try {
+								 	String voornaam = Koper.getString(1);
+								 	String achternaam = Koper.getString(2);
+								 	String adres = Koper.getString(3);
+								 	String postcode = Koper.getString(4);
+								 	String plaats = Koper.getString(5);
+						         	MimeMessage message = new MimeMessage(session);  
+						         	message.setFrom(new InternetAddress(from));  
+						         	message.addRecipient(Message.RecipientType.TO,new InternetAddress(to));  
+						         	message.setSubject("Factuur"); 
+						         	StringBuilder producten = new StringBuilder();
+						         	producten.append("U heeft het volgende gekocht:\n");
+						         	totaalPrijs = model.getTotaalPrijs(factuurID);
+						         	factuurProducten.keySet().forEach(key -> {
+						        	 	Object value = factuurProducten.get(key);
+						        	 	BigDecimal productPrijs = new BigDecimal(model.getProductPrijsByName(key));
+						        	 	producten.append(String.format("<tr><td>%s</td><td>%s</td><td>%.2f</td></tr>", key,value,productPrijs));
+						         	});
+						         	message.setContent(String.format
+						        		 	("<h1>Hallo %s %s, hierbij uw factuur van u recente aankoop</h1>"
+						        				 + "<p>Adres: %s</p>"
+						        					+ "<p>%s %s</p>"
+						        		 			+ "<table>"
+						        		 			+ "<tr>"
+						        		 			+ "<th>Product</th><th>Aantal</th><th>Prijs</th>"
+						        		 			+ "</tr>%s"
+						        		 			+ "</table>"
+						        		 			+ "Totaal Prijs: %.2f", voornaam,achternaam,adres,postcode,plaats,producten,totaalPrijs
+						        				 ), "text/html");
+						         	Transport.send(message);
+						         	JOptionPane.showOptionDialog(null, "Factuur verstuurd naar " + to, "Email verstuurd", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,null,options,options[0]); // Get factuurID
+								 	return;
+						    	} catch (Exception e) {
+						    		e.printStackTrace();
+						    	}
+							}
 						}
 					}
 				}
